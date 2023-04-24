@@ -34,8 +34,9 @@ func main() {
 }
 
 func postgresBench() {
-	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
-		GetEnv("DB_USER"), GetEnv("DB_PASSWORD"), GetEnv("DB_HOST"), GetEnv("DB_PORT"), GetEnv("DB_NAME"))
+	dsn := GetEnv("POSTGRES_DSN")
+
+	fmt.Printf("DSN: %s\n", dsn)
 
 	start := time.Now()
 	db, err := gorm.Open(postgres.Open(dsn), &config)
@@ -49,7 +50,7 @@ func postgresBench() {
 }
 
 func mysqlBench() {
-	dsn := "root:senha123@tcp(localhost:3306)/teste?parseTime=true"
+	dsn := GetEnv("MYSQL_DSN")
 
 	start := time.Now()
 	db, err := gorm.Open(mysql.Open(dsn), &config)
@@ -100,11 +101,8 @@ func loadEnvs() {
 	}
 
 	envs = map[string]string{
-		"APP_ENV":     os.Getenv("APP_ENV"),
-		"DB_HOST":     os.Getenv("DB_HOST"),
-		"DB_PORT":     os.Getenv("DB_PORT"),
-		"DB_NAME":     os.Getenv("DB_NAME"),
-		"DB_USER":     os.Getenv("DB_USER"),
-		"DB_PASSWORD": os.Getenv("DB_PASSWORD"),
+		"APP_ENV":      os.Getenv("APP_ENV"),
+		"POSTGRES_DSN": os.Getenv("POSTGRES_DSN"),
+		"MYSQL_DSN":    os.Getenv("MYSQL_DSN"),
 	}
 }
