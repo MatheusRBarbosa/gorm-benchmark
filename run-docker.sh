@@ -2,9 +2,8 @@
 echo "Running Docker"
 
 docker run -p 8080:8080 -d -e PORT=8080 --name=gorm-benchmark \
- -e DB_USER=postgres \
- -e DB_PASSWORD=senha123 \
- -e DB_HOST=0.0.0.0 \
- -e DB_PORT=5432 \
- -e DB_NAME=postgres \
+ --network=host \
+ -e POSTGRES_DSN="postgresql://postgres:senha123@localhost:5432/postgres?sslmode=disable" \
+ -e MYSQL_DSN="root:senha123@tcp(localhost:3306)/teste?parseTime=true" \
+ -e TARGET=postgres \
  gorm-benchmark

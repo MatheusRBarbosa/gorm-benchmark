@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -21,7 +20,7 @@ var config = gorm.Config{
 
 func main() {
 	loadEnvs()
-	arg := strings.ToLower(os.Args[1])
+	arg := GetEnv("TARGET")
 	if arg == "postgres" {
 		postgresBench()
 		return
@@ -104,5 +103,6 @@ func loadEnvs() {
 		"APP_ENV":      os.Getenv("APP_ENV"),
 		"POSTGRES_DSN": os.Getenv("POSTGRES_DSN"),
 		"MYSQL_DSN":    os.Getenv("MYSQL_DSN"),
+		"TARGET":       os.Getenv("TARGET"),
 	}
 }
