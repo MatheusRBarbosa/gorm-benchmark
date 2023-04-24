@@ -2,21 +2,25 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
+var envs map[string]string
 var config = gorm.Config{
 	PrepareStmt:            true,
 	SkipDefaultTransaction: true,
 }
 
 func main() {
+	loadEnvs()
 	arg := strings.ToLower(os.Args[1])
 	if arg == "postgres" {
 		postgresBench()
@@ -30,7 +34,8 @@ func main() {
 }
 
 func postgresBench() {
-	dsn := "postgresql://postgres:senha123@localhost:5432/postgres?sslmode=disable"
+	dsn := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+		GetEnv("DB_USER"), GetEnv("DB_PASSWORD"), GetEnv("DB_HOST"), GetEnv("DB_PORT"), GetEnv("DB_NAME"))
 
 	start := time.Now()
 	db, err := gorm.Open(postgres.Open(dsn), &config)
@@ -82,4 +87,24 @@ func executeBenchmark(db *gorm.DB) {
 	start = time.Now()
 	db.Unscoped().Delete(&User{}, user.ID)
 	fmt.Printf("==> Delete User user: %s\n", time.Since(start))
+}
+
+func GetEnv(name string) string {
+	return envs[name]
+}
+
+func loadEnvs() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	envs = map[string]string{
+		"APP_ENV":     os.Getenv("APP_ENV"),
+		"DB_HOST":     os.Getenv("DB_HOST"),
+		"DB_PORT":     os.Getenv("DB_PORT"),
+		"DB_NAME":     os.Getenv("DB_NAME"),
+		"DB_USER":     os.Getenv("DB_USER"),
+		"DB_PASSWORD": os.Getenv("DB_PASSWORD"),
+	}
 }
